@@ -31,12 +31,14 @@ const Register = () => {
           icon: "success",
           confirmButtonText: "OK",
         }).then(() => {
+          
+          navigate("/login");
           // After user clicks "OK", reset the form and navigate to login page
           setUser({
             username: "",
             password: "",
           });
-          navigate("/login");
+          
         });
       } else {
         // Failure alert with SweetAlert
@@ -63,7 +65,7 @@ const Register = () => {
 
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
+    <div className="flex items-center justify-center min-h-screen bg-gradient from-blue-500 to-purple-600">
     <div className="w-full max-w-sm p-8 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-center mb-6">Register</h2>
 
@@ -83,7 +85,7 @@ const Register = () => {
             placeholder="Username"
             value={user.username}
             name="username"
-            onChange={handleChange}
+            onClick={handleChange}
           />
         </label>
 

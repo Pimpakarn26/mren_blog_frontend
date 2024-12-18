@@ -5,14 +5,14 @@ import PostDetail from "../pages/PostDetail";
 import Create from "../pages/Create";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import Layout from "../component/Layout";
+import Layout from "../components/Layout";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
-      { path: "home", element: <Home /> },
+      { path: "/", element: <Home /> },
       { path: "edit/:id", element: <Edit /> },
       { path: "create/:id", element: <Create /> },
       { path: "post/:id", element: <PostDetail /> },
