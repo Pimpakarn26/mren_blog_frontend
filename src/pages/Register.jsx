@@ -1,126 +1,115 @@
-import {useState} from "react";
-import AuthService from "../services/auth.service";
-import { useNavigate } from "react-router";
-import Swal from "sweetalert2";
+import React, { useState, useEffect } from "react";
+import AuthService from "../services/auth.service"; // ถ้าคุณใช้ AuthService
+import { useNavigate } from "react-router"; // เปลี่ยนเป็น useNavigate ที่ถูกต้อง
+import Swal from "sweetalert2"; // เพิ่ม SweetAlert2 สำหรับแจ้งเตือน
+import { useAuthContext } from "../context/AuthContext"; // import useAuthContext
 
 const Register = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState({
-    username:"",
-    password:"",
+    username: "",
+    password: "",
   });
+
+  const { user: loggedUser } = useAuthContext(); // เรียกใช้ login จาก context
+  useEffect(() => {
+    if (loggedUser) {
+      navigate("/");
+    }
+  }, [loggedUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUser((user) => ({ ...user, [name]: value }));
+    setUser((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the default form submission
+    e.preventDefault(); // ป้องกันการรีเฟรชหน้าเมื่อกด Submit
+
     try {
-      const currentUser = await AuthService.register(
-        user.username,
-        user.password
-      );
-      console.log(currentUser.status);
-      if (currentUser.status === 200) {
-        // Success alert with SweetAlert
+      const response = await AuthService.register(user.username, user.password); // ใช้ async/await สำหรับการสมัคร
+      if (response.status === 200) {
         Swal.fire({
-          title: "Registration Successful",
-          text: currentUser.data.message,
+          title: "User Registration",
+          text: response.data.message || "Registration successful!",
           icon: "success",
-          confirmButtonText: "OK",
-        }).then(() => {
-          
-          navigate("/login");
-          // After user clicks "OK", reset the form and navigate to login page
-          setUser({
-            username: "",
-            password: "",
-          });
-          
         });
+        navigate("/login"); // หลังจากสมัครเสร็จให้ไปหน้า login
       } else {
-        // Failure alert with SweetAlert
         Swal.fire({
           title: "Error",
           text:
-            currentUser.data.message ||
-            "Registration failed. Please try again.",
+            response.data.message || "Registration failed. Please try again.",
           icon: "error",
-          confirmButtonText: "OK",
         });
       }
     } catch (error) {
-      console.error("An error occurred during registration:", error);
-      // General error alert
+      console.error("Error during registration:", error);
       Swal.fire({
         title: "Error",
-        text: "An unexpected error occurred. Please try again later.",
+        text:
+          error.response?.data?.message ||
+          "Something went wrong. Please try again.",
         icon: "error",
-        confirmButtonText: "OK",
       });
     }
   };
 
-
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient from-blue-500 to-purple-600">
-    <div className="w-full max-w-sm p-8 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-center mb-6">Register</h2>
-
-      <form onSubmit={handleSubmit}>
-        <label className="input input-bordered flex items-center gap-2 mb-4">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            className="h-4 w-4 opacity-70"
-          >
-            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-          </svg>
-          <input
-            type="text"
-            className="grow p-2"
-            placeholder="Username"
-            value={user.username}
-            name="username"
-            onClick={handleChange}
-          />
-        </label>
-
-        <label className="input input-bordered flex items-center gap-2 mb-6">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            className="h-4 w-4 opacity-70"
-          >
-            <path
-              fillRule="evenodd"
-              d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-              clipRule="evenodd"
+    <div className="flex justify-center items-center h-screen ">
+      <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-96">
+        <h1 className="text-2xl font-bold text-center mb-4">Register</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="username"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username" // เพิ่ม name attribute
+              className="input input-bordered w-full"
+              value={user.username} // ใช้ user.username
+              onChange={handleChange} // ใช้ handleChange
+              required
             />
-          </svg>
-          <input
-            type="password"
-            className="grow p-2"
-            placeholder="Password"
-            value={user.password}
-            name="password"
-            onChange={handleChange}
-          />
-        </label>
+          </div>
 
-        <button
-          className="w-full bg-blue-600 text-white font-medium py-2 mt-4 rounded-lg hover:bg-blue-500 transition"
-          type="submit"
-        >
-          Register
-        </button>
-      </form>
+          <div className="mb-6">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="password"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password" // เพิ่ม name attribute
+              className="input input-bordered w-full"
+              value={user.password} // ใช้ user.password
+              onChange={handleChange} // ใช้ handleChange
+              required
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <button type="submit" className="btn btn-primary w-full">
+              Register
+            </button>
+          </div>
+        </form>
+        <p className="text-center mt-4 text-sm">
+          Already have an account?{" "}
+          <a href="/login" className="text-blue-500">
+            Login here
+          </a>
+        </p>
+      </div>
     </div>
-  </div>
   );
 };
 
