@@ -41,7 +41,7 @@ const Header = () => {
           {/* ปุ่ม Create New Post จะโชว์เฉพาะเมื่อผู้ใช้ล็อกอิน */}
           {user && (
             <li>
-              <a href="create/:id" className="btn btn-outline btn-success">
+              <a href="/create" className="btn btn-outline btn-success">
                 Create New Post
               </a>
             </li>

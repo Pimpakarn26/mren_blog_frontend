@@ -7,13 +7,15 @@ const cookies = new Cookies;
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({children}) => {
+export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(getUser);
 
     const login = (user) => setUser(user);
 
     const logout = () => {
         AuthService.logout();
+        setUser(null);
+        AuthService.logoutCookies();
         setUser(null);
     };
 
