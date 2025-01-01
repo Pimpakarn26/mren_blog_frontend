@@ -9,22 +9,24 @@ const register = async (username, password) => {
 
 const login = async (username, password) => {
   const response = await api.post(API_URL + "/login", { username, password });
+  //save data to cookies
   const { status, data } = response;
-  if(status === 200){
-    if(data.accessToken){
-      cookies.set("accessToken", data.accessToken,{
+  if (status === 200) {
+    if (data.accessToken) {
+      cookies.set("accessToken", data.accessToken, {
         path: "/",
-        expires: new Date(Date.now() + 86400), //expires data 24h
+        expires: new Date(Date.now() + 86400), //expire date 24h
       });
-      cookies.set("user", data);
     }
+    cookies.set("user", data);
   }
   return response;
-}
+};
+
 const logout = () => {
-  cookies.remove("accessToken", {path: "/"});
-  cookies.remove("user", {path: "/"});
-}
+  cookies.remove("accessToken", { path: "/" });
+  cookies.remove("user", { path: "/" });
+};
 const AuthService = {
   register,
   login,
