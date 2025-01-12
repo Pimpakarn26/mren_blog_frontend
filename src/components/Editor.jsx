@@ -29,6 +29,7 @@ const Editor = forwardRef(({ value, onChange }, ref) => {
   const modules = {
     toolbar: toolbarOptions,
   };
+  
   return (
     <div className="content h-full max-h-screen overflow-y-auto">
       <ReactQuill

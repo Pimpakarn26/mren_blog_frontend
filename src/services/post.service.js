@@ -19,10 +19,20 @@ const getPostById = async (id) => {
 const deleteById = async (id) => {
   return await api.delete(`${API_URL}/${id}`);
 };
+
+const updatePostById = async (id, post) => {
+  return await api.put(`${API_URL}/${id}` , post, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+
 const PostService = {
   createPost,
   getPosts,
   getPostById,
+  updatePostById,
   deleteById,
 };
 
